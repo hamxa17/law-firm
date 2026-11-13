@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { HeaderLogo } from "./Brand";
 import { navLeft, navRight } from "@/lib/site";
 
+const isActive = (pathname: string, href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+
 export default function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -15,26 +21,23 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const link = (l: { label: string; href: string }) => {
+    const active = isActive(pathname, l.href);
+    return (
+      <li key={l.label}>
+        <Link href={l.href} className={active ? "is-active" : ""} aria-current={active ? "page" : undefined}>
+          {l.label}
+        </Link>
+      </li>
+    );
+  };
+
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${open ? "is-open" : ""}`}>
       <nav className="site-header__inner" aria-label="Main">
-        <ul className="nav nav--left">
-          {navLeft.map((l, i) => (
-            <li key={l.label}>
-              <a href={l.href} className={i === 0 ? "is-active" : ""}>
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <ul className="nav nav--left">{navLeft.map(link)}</ul>
         <HeaderLogo />
-        <ul className="nav nav--right">
-          {navRight.map((l) => (
-            <li key={l.label}>
-              <a href={l.href}>{l.label}</a>
-            </li>
-          ))}
-        </ul>
+        <ul className="nav nav--right">{navRight.map(link)}</ul>
         <button className="menu-btn" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
           <span />
           <span />
@@ -42,9 +45,14 @@ export default function Header() {
       </nav>
       <div className="mobile-menu">
         {[...navLeft, ...navRight].map((l) => (
-          <a key={l.label} href={l.href} onClick={() => setOpen(false)}>
+          <Link
+            key={l.label}
+            href={l.href}
+            onClick={() => setOpen(false)}
+            aria-current={isActive(pathname, l.href) ? "page" : undefined}
+          >
             {l.label}
-          </a>
+          </Link>
         ))}
       </div>
     </header>

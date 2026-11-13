@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 // The R&L monogram is a transparent mask (public/brand/mark.png) so it can take
 // any brand colour via CSS: champagne on dark/blue, navy on light.
 export function Mark({ size = 44, className = "" }: { size?: number; className?: string }) {
@@ -31,9 +33,9 @@ export function LogoLockup() {
 
 export function HeaderLogo() {
   return (
-    <a href="/" className="header-logo" aria-label="Rajaul & Lawyers — Home">
+    <Link href="/" className="header-logo" aria-label="Rajaul & Lawyers — Home">
       <LogoLockup />
-    </a>
+    </Link>
   );
 }
 
